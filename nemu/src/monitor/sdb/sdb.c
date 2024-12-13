@@ -47,6 +47,24 @@ static int cmd_c(char *args) {
   return 0;
 }
 
+static int cmd_si(char *args) {
+  char *arg0 = strtok(args, " ");
+  char *arg1 = strtok(NULL, " ");
+  if (arg1 != NULL) {
+    printf("[si] only requires one parameter");
+  } else if (arg0 != NULL){
+    int num;
+    int result = sscanf(arg0, "%d", &num);
+    if (result == 1) {
+        cpu_exec(num);
+    } else {
+        printf("[si] can not format parameter");
+    }
+  } else {
+    cpu_exec(1);
+  }
+  return 0;
+}
 
 static int cmd_q(char *args) {
   return -1;
@@ -64,6 +82,7 @@ static struct {
   { "q", "Exit NEMU", cmd_q },
 
   /* TODO: Add more commands */
+  { "si", "Execute steps on arguments(default step 1)", cmd_si },
 
 };
 
