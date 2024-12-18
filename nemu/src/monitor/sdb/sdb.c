@@ -66,6 +66,26 @@ static int cmd_si(char *args) {
   return 0;
 }
 
+static int cmd_info(char *args) {
+  
+  char *arg0 = strtok(args, " ");
+  char *arg1 = strtok(NULL, " ");
+  if (arg1 != NULL) {
+    printf("Does not match the input format: info SUBCMD.    error:1\n");
+  } else if (arg0 != NULL){
+
+    if (*arg0 == 'r'){
+      isa_reg_display();
+    } else if (*arg0 == 'w'){
+      
+    } else {
+      
+    }
+  } else {
+  }
+  return 0;
+}
+
 static int cmd_q(char *args) {
   return -1;
 }
@@ -83,6 +103,7 @@ static struct {
 
   /* TODO: Add more commands */
   { "si", "Execute steps on arguments(default step 1)", cmd_si },
+  { "info", "Print program status", cmd_info },
 
 };
 
