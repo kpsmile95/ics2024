@@ -24,6 +24,7 @@ static int is_batch_mode = false;
 
 void init_regex();
 void init_wp_pool();
+void sdb_watchpoint_display();
 
 /* We use the `readline' library to provide more flexibility to read from stdin.
  */
@@ -57,34 +58,32 @@ static int cmd_q(char *args) {
 static int cmd_help(char *args);
 
 static int cmd_si(char *args) {
-  char *arg0 = strtok(args, " ");
-  char *arg1 = strtok(NULL, " ");
-  if (arg1 != NULL) {
-    printf("[si] only requires one parameter");
-  } else if (arg0 != NULL) {
+  char *step = strtok(args, " ");
+  char *moreArg = strtok(NULL, " ");
+  if (moreArg != NULL || step == NULL) {
+    printf("Does not match the input format: si [N] .    error:1\n");
+  } else {
     int num;
-    int result = sscanf(arg0, "%d", &num);
+    int result = sscanf(step, "%d", &num);
     if (result == 1) {
       cpu_exec(num);
     } else {
-      printf("[si] can not format parameter");
+      cpu_exec(1);
     }
-  } else {
-    cpu_exec(1);
   }
   return 0;
 }
 
 static int cmd_info(char *args) {
   char *arg0 = strtok(args, " ");
-  char *arg1 = strtok(NULL, " ");
-  if (arg1 != NULL || arg0 == NULL) {
+  char *moreArg = strtok(NULL, " ");
+  if (moreArg != NULL || arg0 == NULL) {
     printf("Does not match the input format: info SUBCMD.    error:1\n");
   } else {
     if (*arg0 == 'r') {
       isa_reg_display();
     } else if (*arg0 == 'w') {
-
+      sdb_watchpoint_display();
     } else {
       printf("Unknow command!\n");
     }
@@ -95,8 +94,8 @@ static int cmd_info(char *args) {
 static int cmd_x(char *args) {
   char *nums = strtok(args, " ");
   char *addr_ = strtok(NULL, " ");
-  char *arge3 = strtok(NULL, " ");
-  if (arge3 != NULL || nums == NULL || addr_ == NULL) {
+  char *moreArg = strtok(NULL, " ");
+  if (moreArg != NULL || nums == NULL || addr_ == NULL) {
     printf("Does not match the input format: x N EXPR .    error:1\n");
   } else {
     int i;
@@ -107,6 +106,16 @@ static int cmd_x(char *args) {
       printf("address: %x  memory: %08x\n", addr, vaddr_read(addr, 4));
       addr += 4;
     }
+  }
+  return 0;
+}
+
+static int cmd_w(char *args) {
+  char *addr = strtok(args, " ");
+  char *moreArg = strtok(NULL, " ");
+  if (moreArg != NULL || addr == NULL) {
+    printf("Does not match the input format: w EXPR .    error:1\n");
+  } else {
   }
   return 0;
 }
@@ -124,6 +133,7 @@ static struct {
     {"si", "Single-Step execution", cmd_si},
     {"info", "Print program status", cmd_info},
     {"x", "Scan memory", cmd_x},
+    {"w", "Set watchpoint", cmd_w},
 
 };
 
