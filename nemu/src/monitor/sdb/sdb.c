@@ -102,6 +102,7 @@ static int cmd_x(char *args) {
     sscanf(addr_, "%x", &addr);
     for (int j = 0; j < i; j++) {
       printf("address: %x  memory: %08x\n", addr, vaddr_read(addr, 4));
+      addr += 4;
     }
   }
   return 0;
