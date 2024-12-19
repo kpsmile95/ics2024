@@ -53,3 +53,34 @@ void sdb_watchpoint_display() {
     p = p->next;
   }
 }
+
+WP *new_wp() {
+  if (free_ == NULL) {
+    /* code */
+    printf("no more free wp");
+    assert(0);
+  }
+  WP *wp = free_;
+  free_ = free_->next;
+
+  if (head == NULL) {
+    head = wp;
+  } else {
+    WP *last = head;
+    while (last->next) {
+      last = last->next;
+    }
+    last->next = head;
+  }
+  wp->next = NULL;
+  return wp;
+}
+
+void new_watchpoint(char *addr) {
+  WP *wp = new_wp();
+  wp->wp_var = strdup(addr);
+  bool success = true;
+  wp->old_value = expr(addr, &success);
+  wp->new_value = wp->old_value;
+  printf("New watchpoint %d: %s\n", wp->NO, wp->wp_var);
+}

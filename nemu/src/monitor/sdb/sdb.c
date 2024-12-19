@@ -25,6 +25,7 @@ static int is_batch_mode = false;
 void init_regex();
 void init_wp_pool();
 void sdb_watchpoint_display();
+void new_watchpoint(char *addr);
 
 /* We use the `readline' library to provide more flexibility to read from stdin.
  */
@@ -116,6 +117,8 @@ static int cmd_w(char *args) {
   if (moreArg != NULL || addr == NULL) {
     printf("Does not match the input format: w EXPR .    error:1\n");
   } else {
+    // todo : valid addr
+    new_watchpoint(addr);
   }
   return 0;
 }
