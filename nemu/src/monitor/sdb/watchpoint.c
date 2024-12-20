@@ -22,6 +22,7 @@ typedef struct watchpoint {
   struct watchpoint *next;
 
   /* TODO: Add more members if necessary */
+  struct watchpoint *pre;
   uint32_t old_value;
   uint32_t new_value;
   char *wp_var;
@@ -29,12 +30,13 @@ typedef struct watchpoint {
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
+static uint8_t wp_size;
 
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i++) {
-    wp_pool[i].NO = i;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
+    wp_pool[i].pre = (i == 0 ? NULL : &wp_pool[i - 1]);
   }
 
   head = NULL;
@@ -82,5 +84,32 @@ void new_watchpoint(char *addr) {
   bool success = true;
   wp->old_value = expr(addr, &success);
   wp->new_value = wp->old_value;
+  wp->NO = wp_size++;
   printf("New watchpoint %d: %s\n", wp->NO, wp->wp_var);
+}
+
+void del_watchpoint(int wp_no) {
+  WP *tmp = head;
+  while (tmp) {
+    if (tmp->NO == wp_no) {
+      break;
+    }
+    tmp = tmp->next;
+  }
+  if (tmp == NULL) {
+    printf("No %d watchpoint!", wp_no);
+  } else {
+    WP *next = tmp->next;
+    WP *pre = tmp->pre;
+    if (next != NULL) {
+      next->pre = pre;
+    }
+    if (pre != NULL) {
+      pre->next = next;
+    }
+    tmp->NO = 0;
+    tmp->next = free_;
+    free_->pre = tmp;
+    free_ = tmp;
+  }
 }
