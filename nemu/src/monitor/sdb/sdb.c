@@ -61,15 +61,17 @@ static int cmd_help(char *args);
 static int cmd_si(char *args) {
   char *step = strtok(args, " ");
   char *moreArg = strtok(NULL, " ");
-  if (moreArg != NULL || step == NULL) {
+  if (moreArg != NULL) {
     printf("Does not match the input format: si [N] .    error:1\n");
+  } else if (step == NULL) {
+    cpu_exec(1);
   } else {
     int num;
     int result = sscanf(step, "%d", &num);
     if (result == 1) {
       cpu_exec(num);
     } else {
-      cpu_exec(1);
+      printf("Does not match the input format: si [N] .    error:1\n");
     }
   }
   return 0;
