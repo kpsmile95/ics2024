@@ -47,7 +47,7 @@ void init_wp_pool() {
 void sdb_watchpoint_display() {
   WP *p = head;
   if (p == NULL) {
-    printf("No watchpoint!");
+    printf("No watchpoint!\n");
     return;
   }
   while (p != NULL) {
@@ -59,7 +59,7 @@ void sdb_watchpoint_display() {
 WP *new_wp() {
   if (free_ == NULL) {
     /* code */
-    printf("no more free wp");
+    printf("no more free wp\n");
     assert(0);
   }
   WP *wp = free_;
