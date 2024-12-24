@@ -95,7 +95,7 @@ static int cmd_info(char *args) {
 }
 
 static int cmd_x(char *args) {
-  char *nums = strtok(args, " ");
+  char *nums = strtok(NULL, " ");
   char *addr_ = strtok(NULL, " ");
   char *moreArg = strtok(NULL, " ");
   if (moreArg != NULL || nums == NULL || addr_ == NULL) {
