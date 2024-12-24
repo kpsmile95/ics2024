@@ -17,28 +17,36 @@
 
 #define NR_WP 32
 
-typedef struct watchpoint {
-  int NO;
-  struct watchpoint *next;
+enum { WATCHPOINT, BREAKPOINT };
 
-  /* TODO: Add more members if necessary */
-  struct watchpoint *pre;
-  uint32_t old_value;
-  uint32_t new_value;
-  char *wp_var;
+typedef struct watchpoint {
+  uint8_t ori_byte : 8;
+  bool enable : 1;
+  bool in_use : 1;
+  int NO : 22;
+
+  union {
+    vaddr_t addr;
+    struct {
+      char *expr;
+      uint32_t old_val;
+      uint32_t new_val;
+    };
+  };
+  int type;
+  struct watchpoint *next;
 } WP;
 
 static WP wp_pool[NR_WP] = {};
 static WP *head = NULL, *free_ = NULL;
-static uint8_t wp_size;
 
 void init_wp_pool() {
   int i;
   for (i = 0; i < NR_WP; i++) {
+    wp_pool[i].NO = i;
+    wp_pool[i].in_use = false;
     wp_pool[i].next = (i == NR_WP - 1 ? NULL : &wp_pool[i + 1]);
-    wp_pool[i].pre = (i == 0 ? NULL : &wp_pool[i - 1]);
   }
-
   head = NULL;
   free_ = wp_pool;
 }
@@ -51,65 +59,37 @@ void sdb_watchpoint_display() {
     return;
   }
   while (p != NULL) {
-    printf("%d %s\n", p->NO, p->wp_var);
+    printf("%d %s\n", p->NO, p->expr);
     p = p->next;
   }
 }
 
 WP *new_wp() {
-  if (free_ == NULL) {
-    /* code */
-    printf("no more free wp\n");
-    assert(0);
-  }
+  assert(free_ != NULL);
   WP *wp = free_;
   free_ = free_->next;
-
-  if (head == NULL) {
-    head = wp;
-  } else {
-    WP *last = head;
-    while (last->next) {
-      last = last->next;
-    }
-    last->next = head;
-  }
-  wp->next = NULL;
+  assert(wp->in_use == false);
+  wp->in_use = true;
   return wp;
 }
 
-void new_watchpoint(char *addr) {
-  WP *wp = new_wp();
-  wp->wp_var = strdup(addr);
-  bool success = true;
-  wp->old_value = expr(addr, &success);
-  wp->new_value = wp->old_value;
-  wp->NO = wp_size++;
-  printf("New watchpoint %d: %s\n", wp->NO, wp->wp_var);
+int new_watchpoint(char *addr) {
+  uint32_t val;
+  bool success;
+  val = expr(addr, &success);
+  if (!success)
+    return -1;
+
+  WP *p = new_wp();
+  p->type = WATCHPOINT;
+  p->expr = strdup(addr);
+  p->old_val = val;
+  p->enable = true;
+
+  p->next = head;
+  head = p;
+
+  return p->NO;
 }
 
-void del_watchpoint(int wp_no) {
-  WP *tmp = head;
-  while (tmp) {
-    if (tmp->NO == wp_no) {
-      break;
-    }
-    tmp = tmp->next;
-  }
-  if (tmp == NULL) {
-    printf("No %d watchpoint!", wp_no);
-  } else {
-    WP *next = tmp->next;
-    WP *pre = tmp->pre;
-    if (next != NULL) {
-      next->pre = pre;
-    }
-    if (pre != NULL) {
-      pre->next = next;
-    }
-    tmp->NO = 0;
-    tmp->next = free_;
-    free_->pre = tmp;
-    free_ = tmp;
-  }
-}
+void del_watchpoint(int wp_no) {}
