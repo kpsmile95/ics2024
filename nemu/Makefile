@@ -61,3 +61,24 @@ else
 # Include rules to build NEMU
 include $(NEMU_HOME)/scripts/native.mk
 endif
+
+
+# 定义输出目录
+OUTPUT_DIR ?= ./output
+
+# 确保输出目录存在
+$(shell mkdir -p $(OUTPUT_DIR))
+
+# 生成 .i 文件的目标
+$(OUTPUT_DIR)/%.i: %.c
+	$(CC) $(CFLAGS) -P -E $< -o $@
+
+# 将 .i 文件添加到源文件列表
+SRCS_I = $(patsubst src/%, $(OUTPUT_DIR)/%, $(SRCS))
+
+# 需要同时编译 .c 文件与生成 .i 文件
+all: $(SRCS) $(SRCS_I)
+
+# 主要编译规则（只编译 .c 文件）
+$(OUTPUT_DIR)/%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
