@@ -63,27 +63,27 @@ include $(NEMU_HOME)/scripts/native.mk
 endif
 
 # Add a new variable for preprocessed output
-PREPROCESS_OUTPUT_DIR ?= ./preprocessed
-CFLAGS_PREPROCESS += -P -E -o $(PREPROCESS_OUTPUT_DIR)/$(@F) \
-  -I$(NEMU_HOME)/include \
-  -I$(NEMU_HOME)/src/isa/riscv32/include \
-  -I$(NEMU_HOME)/tools/capstone/repo/include/
+# PREPROCESS_OUTPUT_DIR ?= ./preprocessed
+# CFLAGS_PREPROCESS += -P -E -o $(PREPROCESS_OUTPUT_DIR)/$(@F) \
+#   -I$(NEMU_HOME)/include \
+#   -I$(NEMU_HOME)/src/isa/riscv32/include \
+#   -I$(NEMU_HOME)/tools/capstone/repo/include/
 
-# Ensure the output directory exists
-$(shell mkdir -p $(PREPROCESS_OUTPUT_DIR))
+# # Ensure the output directory exists
+# $(shell mkdir -p $(PREPROCESS_OUTPUT_DIR))
 
-# Define a rule for preprocessing
-%.i: %.c
-	@echo -e "\033[1;34mPreprocessing:\033[0m $< \033[1;32m->\033[0m $(PREPROCESS_OUTPUT_DIR)/$(@F)"
-	$(CC) $(CFLAGS_PREPROCESS) $<
+# # Define a rule for preprocessing
+# %.i: %.c
+# 	@echo -e "\033[1;34mPreprocessing:\033[0m $< \033[1;32m->\033[0m $(PREPROCESS_OUTPUT_DIR)/$(@F)"
+# 	$(CC) $(CFLAGS_PREPROCESS) $<
 
-# Modify the source files to include preprocessing targets
-SRCS_PREPROCESS = $(SRCS-y:.c=.i)
+# # Modify the source files to include preprocessing targets
+# SRCS_PREPROCESS = $(SRCS-y:.c=.i)
 
-# Add the preprocessing targets to the build
-all: $(SRCS_PREPROCESS) $(SRCS)
+# # Add the preprocessing targets to the build
+# all: $(SRCS_PREPROCESS) $(SRCS)
 
-# Your existing build rules...
+# # Your existing build rules...
 
-# Ensure that the preprocessing happens before the final build
-$(SRCS): $(SRCS_PREPROCESS)
+# # Ensure that the preprocessing happens before the final build
+# $(SRCS): $(SRCS_PREPROCESS)
