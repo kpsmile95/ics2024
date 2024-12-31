@@ -62,23 +62,28 @@ else
 include $(NEMU_HOME)/scripts/native.mk
 endif
 
+# Add a new variable for preprocessed output
+PREPROCESS_OUTPUT_DIR ?= ./preprocessed
+CFLAGS_PREPROCESS += -P -E -o $(PREPROCESS_OUTPUT_DIR)/$(@F) \
+  -I$(NEMU_HOME)/include \
+  -I$(NEMU_HOME)/src/isa/riscv32/include \
+  -I$(NEMU_HOME)/tools/capstone/repo/include/
 
-# 定义输出目录
-OUTPUT_DIR ?= ./output
+# Ensure the output directory exists
+$(shell mkdir -p $(PREPROCESS_OUTPUT_DIR))
 
-# 确保输出目录存在
-$(shell mkdir -p $(OUTPUT_DIR))
+# Define a rule for preprocessing
+%.i: %.c
+	@echo -e "\033[1;34mPreprocessing:\033[0m $< \033[1;32m->\033[0m $(PREPROCESS_OUTPUT_DIR)/$(@F)"
+	$(CC) $(CFLAGS_PREPROCESS) $<
 
-# 生成 .i 文件的目标
-$(OUTPUT_DIR)/%.i: %.c
-	$(CC) $(CFLAGS) -P -E $< -o $@
+# Modify the source files to include preprocessing targets
+SRCS_PREPROCESS = $(SRCS-y:.c=.i)
 
-# 将 .i 文件添加到源文件列表
-SRCS_I = $(patsubst src/%, $(OUTPUT_DIR)/%, $(SRCS))
+# Add the preprocessing targets to the build
+all: $(SRCS_PREPROCESS) $(SRCS)
 
-# 需要同时编译 .c 文件与生成 .i 文件
-all: $(SRCS) $(SRCS_I)
+# Your existing build rules...
 
-# 主要编译规则（只编译 .c 文件）
-$(OUTPUT_DIR)/%.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+# Ensure that the preprocessing happens before the final build
+$(SRCS): $(SRCS_PREPROCESS)
