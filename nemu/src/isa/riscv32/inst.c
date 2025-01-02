@@ -35,10 +35,13 @@ enum {
 
 static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_t *imm, int type) {
   uint32_t i = s->isa.inst;
-  printf("isa=%x\n",i);
   int rs1 = BITS(i, 19, 15);
   int rs2 = BITS(i, 24, 20);
   *rd     = BITS(i, 11, 7);
+  printf("isa=%x\n",i);
+  printf("rs1=%x\n",rs1);
+  printf("rs2=%x\n",rs2);
+  printf("rd=%x\n",*rd);
   switch (type) {
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
