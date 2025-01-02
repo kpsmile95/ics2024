@@ -38,10 +38,6 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
   int rs1 = BITS(i, 19, 15);
   int rs2 = BITS(i, 24, 20);
   *rd     = BITS(i, 11, 7);
-  printf("isa=%x\n",i);
-  printf("rs1=%x\n",rs1);
-  printf("rs2=%x\n",rs2);
-  printf("rd=%x\n",*rd);
   switch (type) {
     case TYPE_I: src1R();          immI(); break;
     case TYPE_U:                   immU(); break;
@@ -49,6 +45,13 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_N: break;
     default: panic("unsupported type = %d", type);
   }
+  printf("isa=%x\n",i);
+  printf("rs1=%x\n",rs1);
+  printf("rs2=%x\n",rs2);
+  printf("rd=%x\n",*rd);
+  printf("src1=%x\n",*src1);
+  printf("src2=%x\n",*src2);
+  printf("imm=%x\n",*imm);
 }
 
 static int decode_exec(Decode *s) {
