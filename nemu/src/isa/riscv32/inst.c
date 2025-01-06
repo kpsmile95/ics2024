@@ -64,13 +64,13 @@ static void decode_operand(Decode *s, int *rd, word_t *src1, word_t *src2, word_
     case TYPE_N: break;
     default: panic("unsupported type = %d", type);
   }
-  printf("isa=%x\n",i);
-  printf("rs1=%x\n",rs1);
-  printf("rs2=%x\n",rs2);
-  printf("rd=%x\n",*rd);
-  printf("src1=%x\n",*src1);
-  printf("src2=%x\n",*src2);
-  printf("imm=%x\n",*imm);
+  // printf("isa=%x\n",i);
+  // printf("rs1=%x\n",rs1);
+  // printf("rs2=%x\n",rs2);
+  // printf("rd=%x\n",*rd);
+  // printf("src1=%x\n",*src1);
+  // printf("src2=%x\n",*src2);
+  // printf("imm=%x\n",*imm);
 }
 
 static int decode_exec(Decode *s) {
