@@ -47,11 +47,14 @@ static void trace_and_difftest(Decode *_this, vaddr_t dnpc) {
 static void exec_once(Decode *s, vaddr_t pc) {
     s->pc = pc;
     s->snpc = pc;
+    printf("s->logbuf=%s\n", s->logbuf);
     isa_exec_once(s);
     cpu.pc = s->dnpc;
 #ifdef CONFIG_ITRACE
     char *p = s->logbuf;
+    printf("p1=%s\n", p);
     p += snprintf(p, sizeof(s->logbuf), FMT_WORD ":", s->pc);
+    printf("p2=%s\n", p);
     int ilen = s->snpc - s->pc;
     int i;
     uint8_t *inst = (uint8_t *)&s->isa.inst;
@@ -75,6 +78,7 @@ static void exec_once(Decode *s, vaddr_t pc) {
     disassemble(p, s->logbuf + sizeof(s->logbuf) - p,
                 MUXDEF(CONFIG_ISA_x86, s->snpc, s->pc), (uint8_t *)&s->isa.inst,
                 ilen);
+    printf("p3=%s,s->logbuf=%s\n", p, s->logbuf);
 #endif
 }
 
